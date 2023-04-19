@@ -3,9 +3,13 @@
 % Used for reference:
 % https://www.mathworks.com/help/deeplearning/ug/time-series-forecasting-using-deep-learning.html
 
+% Requires the following Add-ons:
+% - Deep Learning Toolbox
+% - Statistics and Machine Learning Toolbox
+
 close all;
 
-sequence_to_load = "selfadapt";
+sequence_to_load = "heart2";
 
 % Only train if lstm_net doesn't yet exist
 % OR if the sequence was changed
@@ -46,6 +50,8 @@ if ~exist("lstm_net", "var") ...
         regressionLayer
     ];
     
+    % Settings for training the network
+    % NOTE MaxEpochs controls the number of "rounds" for training
     options = trainingOptions( ...
         "adam", ...
         MaxEpochs=500, ...
@@ -54,6 +60,7 @@ if ~exist("lstm_net", "var") ...
         Verbose=0 ...
     );
     
+    % Train the network
     lstm_net = trainNetwork(inputs, responses, layers, options);
 end
 
