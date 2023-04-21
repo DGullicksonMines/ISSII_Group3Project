@@ -9,7 +9,7 @@
 
 close all;
 
-sequence_to_load = "heart2";
+sequence_to_load = "DIAWind";
 
 % Only train if lstm_net doesn't yet exist
 % OR if the sequence was changed

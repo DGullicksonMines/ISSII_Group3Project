@@ -6,7 +6,7 @@
 
 close all;
 
-seq_to_load = "selfadapt";
+seq_to_load = "DIATemp";
 
 % Train the network only once unless something has changed
 % to force a retrain, delete lstm_net from your workspace
@@ -18,10 +18,9 @@ if ~exist("lstm_net", "var") || ~exist("l_seq", "var") || seq_to_load ~= l_seq
     seq = seq.sequence;
 
     % Split this sequence into individual training sequences
-    % Specify the number of training sequence
-    train_seqs = 120;
-    % And the length of each
     train_seq_len = 40;
+
+    train_seqs = floor((length(seq) - 1) / train_seq_len);
 
     %inputs = zeros(train_seqs, train_seq_len, 9);
     %responses = zeros(train_seqs, train_seq_len, 9);
@@ -54,7 +53,7 @@ if ~exist("lstm_net", "var") || ~exist("l_seq", "var") || seq_to_load ~= l_seq
     ];
     
     options = trainingOptions("adam", ...
-        MaxEpochs = 2000, ...
+        MaxEpochs = 250, ...
         Shuffle = "every-epoch", ...
         Plots = "training-progress", ...
         Verbose = 0 ...
