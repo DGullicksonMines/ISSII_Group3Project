@@ -1,0 +1,18 @@
+LSTM_Multichannel,,,,
+Correctly predicted,Sequence,LSTM Layer Height,Epochs,Training Sequence Length
+81.222%,heart2,50,250,40
+70.667%,heart2,100,250,40
+52.175%,DIAtemp,50,250,40
+52.297%,DIAtemp,100,250,40
+61.602%,Hawaiian,50,250,40
+61.231%,Hawaiian,100,250,40
+61.974%,Hawaiian,100,250,150
+,,,,
+NN_NoLSTM,,,,
+Correctly predicted,Sequence,Layer Heights,Epochs,Training Sequence Length
+81.444%,heart2,"1000,500,100,50,100",250,40
+81.444%,heart2,"1000,500,100,10,100",250,40
+81.667%,heart2,"1000,500,100,5,100",250,40
+50.928%,DIAtemp,"1000,500,100,10,100",250,40
+51.415%,DIAtemp,"1000,500,100,5,100",250,40
+60.134%,Hawaiian,"1000,500,100,5,100",250,40
