@@ -16,3 +16,15 @@ Correctly predicted,Sequence,Layer Heights,Epochs,Training Sequence Length
 50.928%,DIAtemp,"1000,500,100,10,100",250,40
 51.415%,DIAtemp,"1000,500,100,5,100",250,40
 60.134%,Hawaiian,"1000,500,100,5,100",250,40
+,,,,
+NAR_NN,,,,
+Correctly predicted,Sequence,feedbackDelays,hiddenLayers,
+60.111%,heart1,1:2,[10],
+73.000%,heart2,1:2,[10],
+72.111%,heart2,1:2,[10 10],
+72.778%,heart2,1:2,[100],
+69.333%,heart2,1:10,[10],
+43.383%,DIAtemp,1:2,[10],
+45.695%,DIAwind,1:2,[10],
+40.998%,Hawaiian,1:2,[10],
+79.727%,solarWind,1:2,[10],
