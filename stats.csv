@@ -18,13 +18,17 @@ Correctly predicted,Sequence,Layer Heights,Epochs,Training Sequence Length
 60.134%,Hawaiian,"1000,500,100,5,100",250,40
 ,,,,
 NAR_NN,,,,
-Correctly predicted,Sequence,feedbackDelays,hiddenLayers,
-60.111%,heart1,1:2,[10],
-73.000%,heart2,1:2,[10],
-72.111%,heart2,1:2,[10 10],
-72.778%,heart2,1:2,[100],
-69.333%,heart2,1:10,[10],
-43.383%,DIAtemp,1:2,[10],
-45.695%,DIAwind,1:2,[10],
-40.998%,Hawaiian,1:2,[10],
-79.727%,solarWind,1:2,[10],
+Correctly predicted,Sequence,feedbackDelays,hiddenLayers,"multichannel, stdev"
+60.111%,heart1,1:2,[10],true
+73.000%,heart2,1:2,[10],true
+72.111%,heart2,1:2,[10 10],true
+72.778%,heart2,1:2,[100],true
+69.333%,heart2,1:10,[10],true
+43.383%,DIAtemp,1:2,[10],true
+45.695%,DIAwind,1:2,[10],true
+40.998%,Hawaiian,1:2,[10],true
+79.727%,solarWind,1:2,[10],true
+4.290%,nonuniform,1:2,[10],true
+11.330%,uniform,1:2,[10],true
+72.333%,heart2,1:2,[10],"false, 0.5"
+72.778%,heart2,1:2,[10],"false, auto"

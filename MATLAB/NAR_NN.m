@@ -9,7 +9,11 @@
 
 close all;
 
-seq_to_load = "heart1";
+seq_to_load = "heart2";
+multichannel = false;
+% Only for multichannel = false
+stdev = 0.5;
+% stdev = 'auto';
 
 % Load the sequence into a variable
 l_seq = seq_to_load;
@@ -20,11 +24,20 @@ seq_len = length(seq);
 % Create input data
 inputs = cell(1, seq_len);
 for i = 1:seq_len
-    inputs{i} = zeros(9, 1);
-    inputs{i}(seq(i)) = 1;
-%     inputs{i} = seq(i);
+    if multichannel
+        inputs{i} = zeros(9, 1);
+        inputs{i}(seq(i)) = 1;
+    else
+        inputs{i} = seq(i);
+    end
 end
 % Each slice, taken by inputs{n}, represents all 9 channels
+
+% Set standard deviation used
+if ~multichannel && strcmp(stdev, 'auto')
+    disp Auto
+    stdev = std(cell2mat(inputs));
+end
 
 % Choose a Training Function
 % For a list of all training functions type: help nntrain
@@ -37,7 +50,7 @@ trainFcn = 'trainlm';  % Levenberg-Marquardt backpropagation.
 %NOTE feedbackDelays controls how many past points are used for
 %     prediction.
 feedbackDelays = 1:2;
-hiddenLayers = [9 50 100 50 9];
+hiddenLayers = [10];
 net = narnet(feedbackDelays, hiddenLayers, 'open', trainFcn);
 
 % Set training parameters
@@ -59,8 +72,12 @@ predicted_data = zeros(sequenceLength, 2);
 
 % Make initial prediction
 [actual_sym, ~] = symbolMachine(ones(9,1) ./ 9);
-last_symbol = zeros(9,1);
-last_symbol(actual_sym) = 1;
+if multichannel
+    last_symbol = zeros(9, 1);
+    last_symbol(actual_sym) = 1;
+else
+    last_symbol = actual_sym;
+end
 
 test_data(1) = actual_sym;
 predicted_data(1, 1) = 0;
@@ -74,14 +91,21 @@ for i = 2:sequenceLength
     [predicted, input_state, layer_state] = ...
         net({last_symbol}, input_state, layer_state);
     predicted = predicted{1};
+    if ~multichannel
+        predicted = normpdf(1:9, predicted, stdev);
+    end
 
     % Make sure the prediciton is normalized, positive, and reasonable
     predicted = max(predicted, 0.0001);
     predicted = predicted/sum(predicted);
 
     [actual_sym, ~] = symbolMachine(predicted);
-    last_symbol = zeros(9,1);
-    last_symbol(actual_sym) = 1;
+    if multichannel
+        last_symbol = zeros(9, 1);
+        last_symbol(actual_sym) = 1;
+    else
+        last_symbol = actual_sym;
+    end
 
     test_data(i) = actual_sym;
     [~, sorted] = sort(predicted, "descend");
