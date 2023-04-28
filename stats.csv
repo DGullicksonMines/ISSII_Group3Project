@@ -7,6 +7,8 @@ Correctly predicted,Sequence,LSTM Layer Height,Epochs,Training Sequence Length
 61.602%,Hawaiian,50,250,40
 61.231%,Hawaiian,100,250,40
 61.974%,Hawaiian,100,250,150
+,nonuniform,100,250,150
+,uniform,100,250,150
 ,,,,
 NN_NoLSTM,,,,
 Correctly predicted,Sequence,Layer Heights,Epochs,Training Sequence Length
@@ -16,10 +18,13 @@ Correctly predicted,Sequence,Layer Heights,Epochs,Training Sequence Length
 50.928%,DIAtemp,"1000,500,100,10,100",250,40
 51.415%,DIAtemp,"1000,500,100,5,100",250,40
 60.134%,Hawaiian,"1000,500,100,5,100",250,40
+2.540%,nonuniform,"1000,500,100,5,100",250,40
+11.050%,uniform,"1000,500,100,5,100",250,40
 ,,,,
 NAR_NN,,,,
 Correctly predicted,Sequence,feedbackDelays,hiddenLayers,"multichannel, stdev"
 60.111%,heart1,1:2,[10],true
+59.778%,heart1,1:2,[9 50 9],true
 73.000%,heart2,1:2,[10],true
 72.111%,heart2,1:2,[10 10],true
 72.778%,heart2,1:2,[100],true
