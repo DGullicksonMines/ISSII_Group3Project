@@ -7,8 +7,8 @@ Correctly predicted,Sequence,LSTM Layer Height,Epochs,Training Sequence Length
 61.602%,Hawaiian,50,250,40
 61.231%,Hawaiian,100,250,40
 61.974%,Hawaiian,100,250,150
-,nonuniform,100,250,150
-,uniform,100,250,150
+3.430%,nonuniform,100,250,150
+10.990%,uniform,100,250,150
 ,,,,
 NN_NoLSTM,,,,
 Correctly predicted,Sequence,Layer Heights,Epochs,Training Sequence Length
