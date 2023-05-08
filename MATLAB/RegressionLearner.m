@@ -8,9 +8,11 @@
 
 close all;
 
-seq_to_load = "DIAtemp";
+seq_to_load = "Hawaiian";
+num_taps = 1;
 time_predictor = false;
 stdev = 'auto';
+% stdev=0.01;
 
 % ---== Load Data ==---
 
@@ -34,14 +36,24 @@ train_seq.time = train_time.';
 test_time = 1:length(sequence_test_data);
 test_seq.time = test_time.';
 
-% Shift the sequence data by one position
-%TODO instead of adding nan, maybe use end-1?
-shifted_sequence_data = [sequence_data(2:end); nan];
-shifted_test_sequence_data = [sequence_test_data(2:end); nan];
+predictorNames = cell(1, num_taps);
+for i=0:num_taps
+    delay = num_taps-i;
 
-% Add the shifted sequence data as a new column in wind_train_data
-train_seq.shifted_sequence = shifted_sequence_data;
-test_seq.shifted_sequence = shifted_test_sequence_data;
+    % Shift the sequence data by one position
+    %TODO instead of adding nan, maybe use end-1?
+    shifted_sequence_data = [sequence_data(1+i:end); zeros(i, 1) + nan];
+    shifted_test_sequence_data = [sequence_test_data(1+i:end); zeros(i, 1) + nan];
+
+    % Add the shifted sequence data as a new column in wind_train_data
+    seq_name = sprintf('delayed_%i', delay);
+    train_seq.(seq_name) = shifted_sequence_data;
+    test_seq.(seq_name) = shifted_test_sequence_data;
+
+    if delay ~= 0
+        predictorNames{i+1} = seq_name;
+    end
+end
 
 % % Create one-hot shifted sequence
 % categorized_data = 1:9 == shifted_sequence_data;
@@ -50,11 +62,10 @@ test_seq.shifted_sequence = shifted_test_sequence_data;
 % train_seq.categorized_sequence = categorized_test_data;
 
 % ---== Train Model ==---
-predictorNames = {'sequence'};
 if time_predictor
     predictorNames{end+1} = 'time';
 end
-responseName = 'shifted_sequence';
+responseName = 'delayed_0';
 [model, validation_RMSE] = trainRegressionModel(train_seq, predictorNames, responseName);
 
 % ---== Test Model ==---
@@ -70,9 +81,10 @@ yfit_rounded = round(yfit);
 
 % Get the sequence data from wind_test_data
 sequence_test = test_seq{:, 'sequence'};
+sequence_test_matched = sequence_test(num_taps+1:end);
 
 % Compare the predicted values to the actual test data
-accuracy = sum(yfit_rounded == sequence_test) / numel(sequence_test);
+accuracy = sum(yfit_rounded(1:end-num_taps) == sequence_test_matched) / numel(sequence_test_matched);
 
 % Display the accuracy as a percentage
 fprintf('Accuracy: %.2f%%\n', accuracy * 100);
@@ -118,14 +130,17 @@ sequenceLength = initializeSymbolMachine( ...
 
 running_seq = {};
 running_seq.time = (1:sequenceLength).';
-running_seq.sequence = zeros(sequenceLength, 1) + nan;
-running_seq.shifted_sequence = zeros(sequenceLength, 1) + nan;
+for delay = 0:num_taps
+    seq_name = sprintf('delayed_%i', delay);
+    running_seq.(seq_name) = zeros(sequenceLength, 1) + nan;
+end
 running_seq = struct2table(running_seq);
 predicted_seq = zeros(sequenceLength, 1);
 for i = 1:sequenceLength
+
     % Make prediction
     prediction = model.predictFcn(running_seq);
-    prediction = round(prediction(max(i-1, 1)));
+    prediction = round(prediction(max(i-num_taps, 1)));
     predicted_seq(i) = prediction;
     predicted = normpdf(1:9, prediction, stdev);
 
@@ -134,9 +149,12 @@ for i = 1:sequenceLength
     predicted = predicted/sum(predicted);
 
     [actual_sym, ~] = symbolMachine(predicted);
-    running_seq.sequence(i) = actual_sym;
-    if i > 1
-        running_seq.shifted_sequence(i-1) = actual_sym;
+    for j=0:num_taps
+        if i > j
+            delay = num_taps - j;
+            seq_name = sprintf('delayed_%i', delay);
+            running_seq.(seq_name)(i-j) = actual_sym;
+        end
     end
 end
 
@@ -147,7 +165,7 @@ figure;
 title("Actual vs Predicted");
 xlabel("Time");
 hold on;
-plot(running_seq.sequence, 'DisplayName', 'Actual');
+plot(running_seq.(sprintf('delayed_%i', num_taps)), 'DisplayName', 'Actual');
 plot(predicted_seq, "--", 'DisplayName', 'Predicted');
 hold off;
 legend;
