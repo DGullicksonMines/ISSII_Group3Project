@@ -8,7 +8,8 @@
 
 close all;
 
-seq_to_load = "solarWind";
+seq_to_load = "DIAtemp";
+time_predictor = false;
 stdev = 'auto';
 
 % ---== Load Data ==---
@@ -21,30 +22,40 @@ train_seq = struct2table(train_seq);
 test_seq = load(sprintf('sequence_%s_test.mat', seq_to_load));
 test_seq = struct2table(test_seq);
 
-% ---== Add response variable ==---
+% ---== Construct tables ==---
 
-% Get the sequence data from wind_train_data
+% Get the sequence data
 sequence_data = train_seq{:, 'sequence'};
+sequence_test_data = test_seq{:, 'sequence'};
+
+% Add the time data
+train_time = 1:length(sequence_data);
+train_seq.time = train_time.';
+test_time = 1:length(sequence_test_data);
+test_seq.time = test_time.';
 
 % Shift the sequence data by one position
 %TODO instead of adding nan, maybe use end-1?
 shifted_sequence_data = [sequence_data(2:end); nan];
+shifted_test_sequence_data = [sequence_test_data(2:end); nan];
 
 % Add the shifted sequence data as a new column in wind_train_data
 train_seq.shifted_sequence = shifted_sequence_data;
+test_seq.shifted_sequence = shifted_test_sequence_data;
 
-% Get the sequence data from wind_train_data
-sequence_data = test_seq{:, 'sequence'};
-
-% Shift the sequence data by one position
-%TODO instead of adding nan, maybe use end-1?
-shifted_sequence_data = [sequence_data(2:end); nan];
-
-% Add the shifted sequence data as a new column in wind_train_data
-test_seq.shifted_sequence = shifted_sequence_data;
+% % Create one-hot shifted sequence
+% categorized_data = 1:9 == shifted_sequence_data;
+% train_seq.categorized_sequence = categorized_data;
+% categorized_test_data = 1:9 == shifted_test_sequence_data;
+% train_seq.categorized_sequence = categorized_test_data;
 
 % ---== Train Model ==---
-[model, validation_RMSE] = trainRegressionModel(train_seq);
+predictorNames = {'sequence'};
+if time_predictor
+    predictorNames{end+1} = 'time';
+end
+responseName = 'shifted_sequence';
+[model, validation_RMSE] = trainRegressionModel(train_seq, predictorNames, responseName);
 
 % ---== Test Model ==---
 yfit = model.predictFcn(test_seq);
@@ -106,6 +117,7 @@ sequenceLength = initializeSymbolMachine( ...
 );
 
 running_seq = {};
+running_seq.time = (1:sequenceLength).';
 running_seq.sequence = zeros(sequenceLength, 1) + nan;
 running_seq.shifted_sequence = zeros(sequenceLength, 1) + nan;
 running_seq = struct2table(running_seq);
@@ -115,8 +127,6 @@ for i = 1:sequenceLength
     prediction = model.predictFcn(running_seq);
     prediction = round(prediction(max(i-1, 1)));
     predicted_seq(i) = prediction;
-%     predicted = zeros(9, 1);
-%     predicted(prediction) = 1;
     predicted = normpdf(1:9, prediction, stdev);
 
     % Make sure the prediciton is normalized, positive, and reasonable
@@ -144,11 +154,11 @@ legend;
 
 % ---== Caluclate bit penalty/% correct ==---
 global SYMBOLDATA;
-BPpPC = SYMBOLDATA.totalPenaltyInBits/(100*SYMBOLDATA.correctPredictions/SYMBOLDATA.sequenceLength);
-fprintf('Bit penalty per %% correct: %.2f\n', BPpPC);
+BPpPC = SYMBOLDATA.totalPenaltyInBits/SYMBOLDATA.correctPredictions;
+fprintf('---\nBit penalty per %% correct: %.2f\n', BPpPC);
 
-% ---== Regression Learner App Generated Training Function ==---
-function [trainedModel, validationRMSE] = trainRegressionModel(trainingData)
+% ---== Regression Learner App PARTIALLY-Generated Training Function ==---
+function [trainedModel, validationRMSE] = trainRegressionModel(trainingData, predictorNames, responseName)
     % [trainedModel, validationRMSE] = trainRegressionModel(trainingData)
     % Returns a trained regression model and its RMSE. This code recreates the
     % model trained in Regression Learner app. Use the generated code to
@@ -191,9 +201,8 @@ function [trainedModel, validationRMSE] = trainRegressionModel(trainingData)
     % This code processes the data into the right shape for training the
     % model.
     inputTable = trainingData;
-    predictorNames = {'sequence'};
     predictors = inputTable(:, predictorNames);
-    response = inputTable.shifted_sequence;
+    response = inputTable.(responseName);
 %     isCategoricalPredictor = [false];
     
     % Train a regression model
