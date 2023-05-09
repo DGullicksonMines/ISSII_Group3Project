@@ -8,8 +8,8 @@
 
 close all;
 
-seq_to_load = "heart1";
-num_taps = 2;
+seq_to_load = "Dickens";
+num_taps = 1;
 time_predictor = false;
 
 % ---== Load Data ==---
@@ -137,13 +137,14 @@ end
 running_seq = struct2table(running_seq);
 predicted_seq = zeros(sequenceLength, 1);
 for i = 1:sequenceLength
+    idx = max(i-num_taps, 1);
     % Make predictions
     predicted = zeros(9, 1);
     for j = 1:9
-        categorized_seq = varfun(@(x) double(x == j), running_seq);
+        categorized_seq = varfun(@(x) double(x == j), running_seq(1:idx, :));
         categorized_seq.Properties.VariableNames = running_seq.Properties.VariableNames;
         prediction = models{j}.predictFcn(categorized_seq);
-        predicted(j) = prediction(max(i-num_taps, 1));
+        predicted(j) = prediction(idx);
     end
 
     % Make sure the prediciton is normalized, positive, and reasonable
