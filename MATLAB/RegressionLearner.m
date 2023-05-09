@@ -156,6 +156,11 @@ for i = 1:sequenceLength
             running_seq.(seq_name)(i-j) = actual_sym;
         end
     end
+
+    % Print out a status every so often
+    if mod(i, 1000) == 0
+        fprintf("%.4f%% complete.\n", 100*i/sequenceLength);
+    end
 end
 
 reportSymbolMachine;
