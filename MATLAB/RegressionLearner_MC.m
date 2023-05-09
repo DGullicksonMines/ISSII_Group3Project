@@ -105,13 +105,13 @@ end
 % Calculate the frequency of each value in sequence_test
 % For each unique value in sequence_test, the tabulate function shows the number of instances and percentage of that 
 % value in sequence_test
-value_counts = tabulate(sequence_test);
+value_counts = tabulate(sequence_test_data);
 
 % Find the most common value
 most_common_value = value_counts(value_counts(:, 2) == max(value_counts(:, 2)), 1);
 
 % Calculate the accuracy of the baseline model
-baseline_accuracy = sum(most_common_value == sequence_test) / numel(sequence_test);
+baseline_accuracy = sum(most_common_value == sequence_test_data) / numel(sequence_test_data);
 
 % Display the baseline accuracy as a percentage
 fprintf('Baseline accuracy: %.2f%%\n', baseline_accuracy * 100);
