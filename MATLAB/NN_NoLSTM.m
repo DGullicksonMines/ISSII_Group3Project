@@ -8,58 +8,53 @@ close all;
 
 seq_to_load = "Hawaiian";
 
-% Train the network only once unless something has changed
-% to force a retrain, delete lstm_net from your workspace
-if ~exist("lstm_net", "var") || ~exist("l_seq", "var") || seq_to_load ~= l_seq
+% Load the sequence into a variable
+l_seq = seq_to_load;
+seq = load(sprintf('sequence_%s_train.mat', l_seq));
+seq = seq.sequence;
 
-    % Load the sequence into a variable
-    l_seq = seq_to_load;
-    seq = load(sprintf('sequence_%s_train.mat', l_seq));
-    seq = seq.sequence;
+% Split this sequence into individual training sequences
+train_seq_len = 40;
+train_seqs = floorDiv(length(seq) - 1, train_seq_len);
 
-    % Split this sequence into individual training sequences
-    train_seq_len = 40;
-    train_seqs = floorDiv(length(seq) - 1, train_seq_len);
+inputs = cell(train_seqs, 1);
+responses = cell(train_seqs, 1);
 
-    inputs = cell(train_seqs, 1);
-    responses = cell(train_seqs, 1);
+% For each training sequence and position, set a channel to 1
+seq_index = 1;
+for i = 1:train_seqs
+    inputs{i} = zeros(9, train_seq_len);
+    responses{i} = zeros(9, train_seq_len);
 
-    % For each training sequence and position, set a channel to 1
-    seq_index = 1;
-    for i = 1:train_seqs
-        inputs{i} = zeros(9, train_seq_len);
-        responses{i} = zeros(9, train_seq_len);
-
-        for j = 1:train_seq_len
-            inputs{i}(seq(seq_index), j) = 1;
-            responses{i}(seq(seq_index + 1), j) = 1;
-            seq_index = seq_index + 1;
-        end
+    for j = 1:train_seq_len
+        inputs{i}(seq(seq_index), j) = 1;
+        responses{i}(seq(seq_index + 1), j) = 1;
+        seq_index = seq_index + 1;
     end
-    % Each slice, taken by arr(n, :, :), represents all 9 channels
-
-    % Create and run network 
-    layers = [
-        sequenceInputLayer(9)
-        fullyConnectedLayer(1000)
-        fullyConnectedLayer(500)
-        fullyConnectedLayer(100)
-        fullyConnectedLayer(5)
-        fullyConnectedLayer(100)
-        fullyConnectedLayer(9)
-        regressionLayer
-    ];
-    
-    options = trainingOptions("adam", ...
-        MaxEpochs = 250, ...
-        Shuffle = "every-epoch", ...
-        Plots = "training-progress", ...
-        Verbose = 0 ...
-    );
-    
-    lstm_net = trainNetwork(inputs, responses, layers, options);
-    disp("Trained new network");
 end
+% Each slice, taken by arr(n, :, :), represents all 9 channels
+
+% Create and run network 
+layers = [
+    sequenceInputLayer(9)
+    fullyConnectedLayer(1000)
+    fullyConnectedLayer(500)
+    fullyConnectedLayer(100)
+    fullyConnectedLayer(100)
+    fullyConnectedLayer(100)
+    fullyConnectedLayer(9)
+    regressionLayer
+];
+
+options = trainingOptions("adam", ...
+    MaxEpochs = 250, ...
+    Shuffle = "every-epoch", ...
+    Plots = "training-progress", ...
+    Verbose = 0 ...
+);
+
+lstm_net = trainNetwork(inputs, responses, layers, options);
+disp("Trained new network");
 
 % Now actually run it
 sequenceLength = initializeSymbolMachine( ...
