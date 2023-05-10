@@ -4,8 +4,6 @@
 % Also consider using the Parallel Computing Toolbox if you've got a
 % CUDA-compatible GPU for gpu-accelerated training
 
-%TODO Could add more predictors, such as 2 steps back.
-
 close all;
 
 seq_to_load = "Hawaiian";
