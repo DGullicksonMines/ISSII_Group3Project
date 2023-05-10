@@ -10,6 +10,8 @@
 close all;
 
 seq_to_load = "heart2";
+feedbackDelays = 1:2;
+hiddenLayers = [10];
 multichannel = false;
 % Only for multichannel = false
 stdev = 0.5;
@@ -49,8 +51,6 @@ trainFcn = 'trainlm';  % Levenberg-Marquardt backpropagation.
 % Create a Nonlinear Autoregressive Network
 %NOTE feedbackDelays controls how many past points are used for
 %     prediction.
-feedbackDelays = 1:2;
-hiddenLayers = [10];
 net = narnet(feedbackDelays, hiddenLayers, 'open', trainFcn);
 
 % Set training parameters

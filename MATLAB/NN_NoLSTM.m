@@ -7,14 +7,24 @@
 close all;
 
 seq_to_load = "Hawaiian";
+epochs = 250;
+train_seq_len = 40;
+layers = [
+    sequenceInputLayer(9)
+    fullyConnectedLayer(1000)
+    fullyConnectedLayer(500)
+    fullyConnectedLayer(100)
+    fullyConnectedLayer(100)
+    fullyConnectedLayer(100)
+    fullyConnectedLayer(9)
+    regressionLayer
+];
 
 % Load the sequence into a variable
-l_seq = seq_to_load;
-seq = load(sprintf('sequence_%s_train.mat', l_seq));
+seq = load(sprintf('sequence_%s_train.mat', seq_to_load));
 seq = seq.sequence;
 
 % Split this sequence into individual training sequences
-train_seq_len = 40;
 train_seqs = floorDiv(length(seq) - 1, train_seq_len);
 
 inputs = cell(train_seqs, 1);
@@ -35,19 +45,8 @@ end
 % Each slice, taken by arr(n, :, :), represents all 9 channels
 
 % Create and run network 
-layers = [
-    sequenceInputLayer(9)
-    fullyConnectedLayer(1000)
-    fullyConnectedLayer(500)
-    fullyConnectedLayer(100)
-    fullyConnectedLayer(100)
-    fullyConnectedLayer(100)
-    fullyConnectedLayer(9)
-    regressionLayer
-];
-
 options = trainingOptions("adam", ...
-    MaxEpochs = 250, ...
+    MaxEpochs = epochs, ...
     Shuffle = "every-epoch", ...
     Plots = "training-progress", ...
     Verbose = 0 ...
@@ -58,7 +57,7 @@ disp("Trained new network");
 
 % Now actually run it
 sequenceLength = initializeSymbolMachine( ...
-    sprintf('sequence_%s_test.mat', l_seq) ...
+    sprintf('sequence_%s_test.mat', seq_to_load) ...
 );
 test_data = zeros(sequenceLength, 1);
 predicted_data = zeros(sequenceLength, 2);
