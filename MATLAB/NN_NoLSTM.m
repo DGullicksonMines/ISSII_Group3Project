@@ -87,9 +87,9 @@ for i = 1:sequenceLength
     predicted_data(i, 1) = sorted(1);
     predicted_data(i, 2) = sorted(2);
 
-    % Print out a heartbeat every x steps
-    if mod(i, 100) == 0
-        disp("Completed " + i + " iterations");
+    % Print out a status every so often
+    if mod(i, 1000) == 0
+        fprintf("%.4f%% complete.\n", 100*i/sequenceLength);
     end
 end
 
