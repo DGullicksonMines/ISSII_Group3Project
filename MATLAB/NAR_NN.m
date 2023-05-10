@@ -120,18 +120,18 @@ end
 
 reportSymbolMachine;
 
-% Plot actual vs predicted
-figure;
-title("Actual vs Predicted");
-xlabel("Time");
-legend();
-hold on;
-% fill([1:sequenceLength sequenceLength:-1:1], ...
-%     [predicted_data(:, 1).' fliplr(predicted_data(:, 2).')], ...
-%     [0.5 0.5 0.5], 'DisplayName', 'Range')
-plot(predicted_data(:, 1), "--", 'DisplayName', 'First Prediction');
-% plot(predicted_data(:, 2), "--", 'DisplayName', 'Second Prediction');
-plot(test_data, 'DisplayName', 'Actual');
-hold off;
+% % Plot actual vs predicted
+% figure;
+% title("Actual vs Predicted");
+% xlabel("Time");
+% legend();
+% hold on;
+% % fill([1:sequenceLength sequenceLength:-1:1], ...
+% %     [predicted_data(:, 1).' fliplr(predicted_data(:, 2).')], ...
+% %     [0.5 0.5 0.5], 'DisplayName', 'Range')
+% plot(predicted_data(:, 1), "--", 'DisplayName', 'First Prediction');
+% % plot(predicted_data(:, 2), "--", 'DisplayName', 'Second Prediction');
+% plot(test_data, 'DisplayName', 'Actual');
+% hold off;
 
 

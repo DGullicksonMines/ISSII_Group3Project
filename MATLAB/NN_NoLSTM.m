@@ -95,13 +95,13 @@ end
 
 reportSymbolMachine;
 
-% Plot actual vs predicted
-figure;
-title("Actual vs Predicted");
-xlabel("Time");
-legend();
-hold on;
-plt1 = plot(test_data, 'DisplayName', 'Actual');
-plt2 = plot(predicted_data(:, 1), "--", 'DisplayName', 'First Prediction');
-plt3 = plot(predicted_data(:, 2), "--", 'DisplayName', 'Second Prediction');
-hold off;
+% % Plot actual vs predicted
+% figure;
+% title("Actual vs Predicted");
+% xlabel("Time");
+% legend();
+% hold on;
+% plt1 = plot(test_data, 'DisplayName', 'Actual');
+% plt2 = plot(predicted_data(:, 1), "--", 'DisplayName', 'First Prediction');
+% plt3 = plot(predicted_data(:, 2), "--", 'DisplayName', 'Second Prediction');
+% hold off;
