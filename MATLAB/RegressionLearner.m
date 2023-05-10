@@ -104,13 +104,6 @@ baseline_accuracy = sum(most_common_value == sequence_test) / numel(sequence_tes
 % Display the baseline accuracy as a percentage
 fprintf('Baseline accuracy: %.2f%%\n', baseline_accuracy * 100);
 
-% % ---== Results ==---
-% % Create a new table with the rounded predicted values and sequence_test
-% results_table = table(yfit, yfit_rounded, sequence_test);
-% 
-% % Rename the variable names in the table
-% results_table.Properties.VariableNames = {'Yfit Sequence', 'Predicted_Sequence', 'Actual_Sequence'};
-
 % ---== Set Standard Deviation ==--
 if strcmp(stdev, 'auto')
     train_predicted = model.predictFcn(train_seq);

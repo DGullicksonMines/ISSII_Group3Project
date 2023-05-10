@@ -53,12 +53,6 @@ for i=0:num_taps
     end
 end
 
-% % Create one-hot shifted sequence
-% categorized_data = 1:9 == shifted_sequence_data;
-% train_seq.categorized_sequence = categorized_data;
-% categorized_test_data = 1:9 == shifted_test_sequence_data;
-% train_seq.categorized_sequence = categorized_test_data;
-
 % ---== Create a sequence per number ==---
 train_seqs = cell(9, 1);
 for i = 1:9
@@ -77,51 +71,6 @@ for i = 1:9
     [model, ~] = trainRegressionModel(train_seqs{i}, predictorNames, responseName);
     models{i} = model;
 end
-
-% % ---== Test Model ==---
-% yfit = model.predictFcn(test_seq);
-% 
-% % ---== Analyze Accuracy ==---
-% % Code first rounds the predicted values in yfit1 to the nearest integer using the round function. It then gets the sequence data from wind_test_data and 
-% % compares the rounded predicted values to the actual test data. The accuracy is calculated by counting the number of times that the predicted value 
-% % matches the actual value, and dividing by the total number of elements in the sequence
-% 
-% % Round the predicted values to the nearest integer
-% yfit_rounded = round(yfit);
-% 
-% % Get the sequence data from wind_test_data
-% sequence_test = test_seq{:, 'sequence'};
-% sequence_test_matched = sequence_test(num_taps+1:end);
-% 
-% % Compare the predicted values to the actual test data
-% accuracy = sum(yfit_rounded(1:end-num_taps) == sequence_test_matched) / numel(sequence_test_matched);
-% 
-% % Display the accuracy as a percentage
-% fprintf('Accuracy: %.2f%%\n', accuracy * 100);
-% 
-% Compare the accuracy of your model against a baseline model that always predicts the most common 
-% value in the test set, you can calculate the frequency of each value in sequence_test using the tabulate function
-
-% Calculate the frequency of each value in sequence_test
-% For each unique value in sequence_test, the tabulate function shows the number of instances and percentage of that 
-% value in sequence_test
-value_counts = tabulate(sequence_test_data);
-
-% Find the most common value
-most_common_value = value_counts(value_counts(:, 2) == max(value_counts(:, 2)), 1);
-
-% Calculate the accuracy of the baseline model
-baseline_accuracy = sum(most_common_value == sequence_test_data) / numel(sequence_test_data);
-
-% Display the baseline accuracy as a percentage
-fprintf('Baseline accuracy: %.2f%%\n', baseline_accuracy * 100);
-
-% % ---== Results ==---
-% % Create a new table with the rounded predicted values and sequence_test
-% results_table = table(yfit, yfit_rounded, sequence_test);
-% 
-% % Rename the variable names in the table
-% results_table.Properties.VariableNames = {'Yfit Sequence', 'Predicted_Sequence', 'Actual_Sequence'};
 
 % ---== Test with symbol machine ==---
 sequenceLength = initializeSymbolMachine( ...
